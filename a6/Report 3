@@ -1,0 +1,40 @@
+import sqlite3
+
+DB_FILE = 'payroll_dc_small.db'
+conn = sqlite3.connect(DB_FILE)
+
+
+def main():
+    print('a6 - standard report 3')
+    strsql = """select 
+                    STEMAGG, 
+                    STEMAGGT, 
+                    STEMTYP, 
+                    STEMOCCT
+                from factdata_mar2016, STEMOCC
+                where factdata_mar2016.STEMOCC = stemocc.STEMOCC
+                limit 10;
+        """
+    cursor = conn.execute(strsql)
+    # the formating string for each row of the report
+    report_string_format = '{0:<40}\t{1:<10}{2:<10}{3:<10}'
+    # printing the header of the report. 
+    print(
+        report_string_format.format(
+            'STEMAGG', 'STEMAGGT', 'STEMTYP', 'STEMOCCT'
+            )
+        )
+
+    for row in cursor:  
+        STEMAGG, STEMAGGT, STEMTYP, STEMOCCT = row
+        print(
+            report_string_format.format(
+                STEMAGG, STEMAGGT, STEMTYP, STEMOCCT
+                )
+            )
+
+    cursor.close()      # close cursor
+    conn.close()       # close connection to the db
+
+if __name__ == "__main__":
+    main()
