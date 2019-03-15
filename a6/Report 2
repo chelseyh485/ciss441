@@ -7,12 +7,14 @@ conn = sqlite3.connect(DB_FILE)
 def main():
     print('a6 - standard report 2')
     strsql = """select 
-                    PPTYP, 
-                    PPTYPT, 
-                    PPGROUP,
-                    PAYPLAN
-                from factdata_mar2016, PPGRD
-                where factdata_mar2016.PPGRD = ppgrd.PPGRD
+                    p.patcot job, 
+                    max(ft.salary) sal_max, 
+                    min(ft.salary) sal_min, 
+                    count(ft.salary) people_count
+                from factdata_mar2016 ft, patco p
+                where ft.patco = p.patco
+                group by job
+                order by sal_max desc
                 limit 10;
         """
     cursor = conn.execute(strsql)
@@ -21,15 +23,15 @@ def main():
     # printing the header of the report. 
     print(
         report_string_format.format(
-            'PPTYP', 'PPTYPT', 'PPGROUP', 'PAYPLAN'
+            'job', 'sal_max', 'sal_min', 'people_count'
             )
         )
 
     for row in cursor:  
-        PPTYP, PPTYPT, PPGROUP, PAYPLAN = row
+        job, sal_max, sal_min, people_count = row
         print(
             report_string_format.format(
-                PPTYP, PPTYPT, PPGROUP, PAYPLAN
+                job, sal_max, sal_min, people_count
                 )
             )
 
