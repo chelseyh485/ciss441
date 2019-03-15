@@ -7,12 +7,14 @@ conn = sqlite3.connect(DB_FILE)
 def main():
     print('a6 - standard report 3')
     strsql = """select 
-                    STEMAGG, 
-                    STEMAGGT, 
-                    STEMTYP, 
-                    STEMOCCT
-                from factdata_mar2016, STEMOCC
-                where factdata_mar2016.STEMOCC = stemocc.STEMOCC
+                    o.occt occupation, 
+                    max(ft.salary) sal_max, 
+                    min(ft.salary) sal_min, 
+                    count(ft.salary) people_count
+                from factdata_mar2016 ft, occ o
+                where ft.occ = o.occ
+                group by occupation
+                order by sal_max desc
                 limit 10;
         """
     cursor = conn.execute(strsql)
@@ -21,15 +23,15 @@ def main():
     # printing the header of the report. 
     print(
         report_string_format.format(
-            'STEMAGG', 'STEMAGGT', 'STEMTYP', 'STEMOCCT'
+            'occupation', 'sal_max', 'sal_min', 'people_count'
             )
         )
 
     for row in cursor:  
-        STEMAGG, STEMAGGT, STEMTYP, STEMOCCT = row
+        occupation, sal_max, sal_min, people_count = row
         print(
             report_string_format.format(
-                STEMAGG, STEMAGGT, STEMTYP, STEMOCCT
+                occupation, sal_max, sal_min, people_count
                 )
             )
 
